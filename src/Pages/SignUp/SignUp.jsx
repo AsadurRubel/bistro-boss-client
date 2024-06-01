@@ -5,10 +5,13 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProvider";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import UseAxiosPublic from "../../Hooks/UseAxiosPublic";
+import SocialLogin from "../../Components/SocialLogin/SocialLogin";
 
 
 
 const SignUp = () => {
+    const axiosPublic = UseAxiosPublic();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const { createUser, updateUserProfile } = useContext(AuthContext)
@@ -21,21 +24,30 @@ const SignUp = () => {
 
 
     const onSubmit = data => {
-        console.log(data)
         createUser(data.email, data.password)
             .then(result => {
                 const loggedUser = result.user
                 console.log(loggedUser)
                 updateUserProfile(data.name, data.photo)
                     .then(() => {
-                        reset();
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'Registration successful!',
-                            timer: 2000
-                        });
-                        console.log(result.user)
+                        // Create User Entry In the Database
+                        const userInfo = {
+                            name: data.name,
+                            email: data.email,
+                        }
+                        axiosPublic.post('/users', userInfo)
+                        .then(res => {
+                            if(res.data.insertedId){
+                                console.log('user Added to the database')
+                                reset();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Registration successful!',
+                                    timer: 2000
+                                }); 
+                            }
+                        })
                         Navigate(location?.state ? location.state : '/')
                     })
                     .catch(error => {
@@ -121,6 +133,8 @@ return (
                             <input className="btn btn-primary" type="submit" value="Register" />
                         </div>
                     </form>
+                    <div className="divider -mt-5">OR</div>
+                            <SocialLogin></SocialLogin>
                     <p className='text-center mb-3'><small>Already Register? <Link to='/login'>Please Login</Link> </small></p>
                 </div>
             </div>

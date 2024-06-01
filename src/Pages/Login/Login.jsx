@@ -4,6 +4,7 @@ import { AuthContext } from '../../Providers/AuthProvider';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
+import SocialLogin from '../../Components/SocialLogin/SocialLogin';
 
 
 
@@ -27,7 +28,7 @@ const Login = () => {
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(email, password)
+
 
         signIn(email, password)
             .then(result => {
@@ -57,7 +58,6 @@ const Login = () => {
 
     const handleValidateCaptcha = e => {
         const user_captcha_value = e.target.value;
-        console.log(user_captcha_value)
         if (validateCaptcha(user_captcha_value)) {
             setDisable(false)
         }
@@ -113,12 +113,16 @@ const Login = () => {
 
                                 </div>
                                 <div className="form-control mt-6">
+                                {/* TODO: Btn will be disable */}
                                     <input
-                                        disabled={disable}
+                                        disabled={false}
                                         className="btn btn-primary" type="submit" value="Login" />
                                 </div>
                             </form>
+                            <div className="divider -mt-5">OR</div>
+                            <SocialLogin></SocialLogin>
                             <p className='text-center mb-3'><small>New Here? <Link to='/signup'>Create an Account</Link> </small></p>
+                            
                         </div>
                     </div>
                 </div>
